@@ -1,25 +1,64 @@
 import logo from './logo.svg';
 import './App.css';
+import { useEffect, useState } from 'react'
+import Login from './login/Login'
+import Register from './register/Register';
+import { useDispatch, useSelector } from 'react-redux';
+import Main from './Main';
+import { adduser } from './action/adduser';
+import jwt_decode from "jwt-decode";
+import { Route, Routes, Location, useLocation } from 'react-router';
+import Enter from './Enter';
+import { ToastContainer } from 'react-toastify';
 
 function App() {
+  const [tset, setstate] = useState(0)
+  const [force, setforce] = useState(0)
+
+  const dispatch = useDispatch()
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const datatoken = jwt_decode(token);
+      const dateNow = Date.now() / 1000;
+
+
+      if (datatoken.exp < dateNow)
+        localStorage.removeItem("token");
+      else { dispatch(adduser(datatoken.user)) }
+    }
+
+  }, [])
+
+
+
+  const state = useSelector(state => state)
+
+  if (state.fullname) {
+    return( <>
+    <Main />
+    <ToastContainer position='bottom-right'/>
+      </>
+      )
+  }
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <>
+    <Enter />
+    <ToastContainer position='bottom-right'/>
+    </>
+  )
+
+
+
+
+
+
+
+
+
+
 }
 
 export default App;
